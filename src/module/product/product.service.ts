@@ -4,7 +4,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from 'src/module/users/users.service';
 import { TransactionsService } from 'src/transactions/transactions.service';
 
 @Injectable()
