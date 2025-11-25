@@ -1,4 +1,4 @@
-import { Product } from '../../module/product/entities/product.entity';
+import { Product } from '../../product/entities/product.entity';
 import { User } from '../../users/entities/user.entity';
 import {
   Column,
@@ -13,10 +13,16 @@ export class Transactions {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Product, (product) => product.transactions)
+  @ManyToOne(() => Product, (product) => product.transactions, {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
   product: Product;
 
-  @ManyToOne(() => User, (user) => user.transactions)
+  @ManyToOne(() => User, (user) => user.transactions, {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
   user: User;
 
   @Column()

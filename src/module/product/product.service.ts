@@ -4,8 +4,8 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
-import { UsersService } from 'src/module/users/users.service';
-import { TransactionsService } from 'src/transactions/transactions.service';
+import { TransactionsService } from '../transactions/transactions.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class ProductService {
@@ -27,19 +27,19 @@ export class ProductService {
     });
     if (!product) throw new NotFoundException('Product not found');
 
-    product.quantity += quantityChange;
+    const quantityChanged = quantityChange - product.quantity;
+    product.quantity = quantityChange;
     await this.productRepository.save(product);
 
     const user = await this.usersService
       .getAllUsers()
       .then((users) => users.find((u) => u.id === userId));
     if (!user) throw new NotFoundException('User not found');
-
     return this.transactionsService.create({
       product,
       user,
-      quantityChanged: quantityChange,
-      changeType: quantityChange > 0 ? 'increase' : 'decrease',
+      quantityChanged: quantityChanged,
+      changeType: quantityChanged > 0 ? 'increase' : 'decrease',
     });
   }
 
@@ -48,6 +48,20 @@ export class ProductService {
       where: { id: productId },
     });
     if (!product) throw new NotFoundException('Product not found');
+    return product;
+  }
+
+  async getAllProducts() {
+    return await this.productRepository.find();
+  }
+
+  async deleteProduct(productId: number) {
+    const product = await this.productRepository.findOne({
+      where: { id: productId },
+    });
+    if (!product) throw new NotFoundException('Product not found');
+
+    await this.productRepository.delete(productId);
     return product;
   }
 }
